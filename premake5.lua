@@ -7,14 +7,14 @@ project "reactphysics3d"
 
 	files
 	{
-		"%{prj.location}/include/*.h",
-		"%{prj.location}/include/*.hpp",
-		"%{prj.location}/src/*.cpp"
+		"include/**.h",
+		"include/**.hpp",
+		"src/**.cpp",
 	}
 
 	includedirs
 	{
-	  "%{prj.location}/include"
+	  "include"
 	}
 
     excludes
