@@ -112,7 +112,8 @@ void Collider::setLocalToBodyTransform(const Transform& transform) {
     const Transform& bodyTransform = mBody->mWorld.mTransformComponents.getTransform(mBody->getEntity());
     mBody->mWorld.mCollidersComponents.setLocalToWorldTransform(mEntity, bodyTransform * transform);
 
-    RigidBody* rigidBody = static_cast<RigidBody*>(mBody);
+	// (Diren): Changed static_cast to dynamic_cast for ensuring validity at runtime 
+    RigidBody* rigidBody = dynamic_cast<RigidBody*>(mBody);
     if (rigidBody != nullptr) {
         rigidBody->setIsSleeping(false);
     }
