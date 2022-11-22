@@ -386,6 +386,9 @@ Vector3 RigidBody::computeCenterOfMass() const {
     const Array<Entity>& colliderEntities = mWorld.mCollisionBodyComponents.getColliders(mEntity);
     for (uint32 i=0; i < colliderEntities.size(); i++) {
 
+        if (mWorld.mCollidersComponents.getIsTrigger(colliderEntities[i]))
+            continue;
+
         const uint32 colliderIndex = mWorld.mCollidersComponents.getEntityIndex(colliderEntities[i]);
 
         const decimal colliderVolume = mWorld.mCollidersComponents.mCollisionShapes[colliderIndex]->getVolume();
@@ -418,6 +421,9 @@ void RigidBody::computeMassAndInertiaTensorLocal(Vector3& inertiaTensorLocal, de
     const Array<Entity>& colliderEntities = mWorld.mCollisionBodyComponents.getColliders(mEntity);
     for (uint32 i=0; i < colliderEntities.size(); i++) {
 
+        if (mWorld.mCollidersComponents.getIsTrigger(colliderEntities[i]))
+            continue;
+        
         const uint32 colliderIndex = mWorld.mCollidersComponents.getEntityIndex(colliderEntities[i]);
 
         const decimal colliderVolume = mWorld.mCollidersComponents.mCollisionShapes[colliderIndex]->getVolume();
@@ -497,6 +503,9 @@ void RigidBody::updateMassFromColliders() {
     // Compute the total mass of the body
     const Array<Entity>& colliderEntities = mWorld.mCollisionBodyComponents.getColliders(mEntity);
     for (uint32 i=0; i < colliderEntities.size(); i++) {
+
+        if (mWorld.mCollidersComponents.getIsTrigger(colliderEntities[i]))
+              continue;
 
         const uint32 colliderIndex = mWorld.mCollidersComponents.getEntityIndex(colliderEntities[i]);
 
