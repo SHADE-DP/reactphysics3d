@@ -150,7 +150,7 @@ void DynamicsSystem::integrateRigidBodiesVelocities(decimal timeStep) {
                 // Integrate the gravity force
                 mRigidBodyComponents.mConstrainedLinearVelocities[i] = mRigidBodyComponents.mConstrainedLinearVelocities[i] + timeStep *
                                                                        mRigidBodyComponents.mInverseMasses[i] * mRigidBodyComponents.mLinearLockAxisFactors[i] *
-                                                                       mRigidBodyComponents.mMasses[i] * mGravity;
+                                                                       mRigidBodyComponents.mMasses[i] * (mGravity * mRigidBodyComponents.mGravityScales[i]);
             }
         }
     }

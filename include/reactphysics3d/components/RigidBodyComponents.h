@@ -157,6 +157,9 @@ class RigidBodyComponents : public Components {
         /// For each body, the vector of lock rotation vectors
         Vector3* mAngularLockAxisFactors;
 
+        /// Array with gravity scales
+        decimal* mGravityScales;
+
         // -------------------- Methods -------------------- //
 
         /// Allocate memory for a given number of components
@@ -371,6 +374,12 @@ class RigidBodyComponents : public Components {
 
         /// A an associated contact pairs into the contact pairs array of the body
         void addContacPair(Entity bodyEntity, uint32 contactPairIndex);
+
+        /// Get the gravity scale of a body component.
+        decimal getGravityScale(Entity bodyEntity) const;
+
+        /// Set the gravity scale of a body component.
+        void setGravityScale(Entity bodyEntity, decimal gravityScale);
 
         // -------------------- Friendship -------------------- //
 
@@ -844,6 +853,19 @@ RP3D_FORCE_INLINE void RigidBodyComponents::addContacPair(Entity bodyEntity, uin
 
     assert(mMapEntityToComponentIndex.containsKey(bodyEntity));
     mContactPairs[mMapEntityToComponentIndex[bodyEntity]].add(contactPairIndex);
+}
+
+RP3D_FORCE_INLINE decimal RigidBodyComponents::getGravityScale(Entity bodyEntity) const
+{
+  assert(mMapEntityToComponentIndex.containsKey(bodyEntity));
+
+  return mGravityScales[mMapEntityToComponentIndex[bodyEntity]];
+}
+
+RP3D_FORCE_INLINE void RigidBodyComponents::setGravityScale(Entity bodyEntity, decimal gravityScale)
+{
+  assert(mMapEntityToComponentIndex.containsKey(bodyEntity));
+  mGravityScales[mMapEntityToComponentIndex[bodyEntity]] = gravityScale;
 }
 
 }

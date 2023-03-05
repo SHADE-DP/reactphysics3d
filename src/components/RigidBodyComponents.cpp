@@ -44,7 +44,7 @@ RigidBodyComponents::RigidBodyComponents(MemoryAllocator& allocator)
                                 sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) +
                                 sizeof(Quaternion) + sizeof(Vector3) + sizeof(Vector3) +
                                 sizeof(bool) + sizeof(bool) + sizeof(Array<Entity>) + sizeof(Array<uint>) +
-                                sizeof(Vector3) + sizeof(Vector3)) {
+                                sizeof(Vector3) + sizeof(Vector3) + sizeof(decimal)) {
 
     // Allocate memory for the components data
     allocate(INIT_NB_ALLOCATED_COMPONENTS);
@@ -94,6 +94,7 @@ void RigidBodyComponents::allocate(uint32 nbComponentsToAllocate) {
     Array<uint>* newContactPairs = reinterpret_cast<Array<uint>*>(newJoints + nbComponentsToAllocate);
     Vector3* newLinearLockAxisFactors = reinterpret_cast<Vector3*>(newContactPairs + nbComponentsToAllocate);
     Vector3* newAngularLockAxisFactors = reinterpret_cast<Vector3*>(newLinearLockAxisFactors + nbComponentsToAllocate);
+    decimal* newGravityScales = reinterpret_cast<decimal*>(newAngularLockAxisFactors + nbComponentsToAllocate);
 
     // If there was already components before
     if (mNbComponents > 0) {
@@ -130,6 +131,7 @@ void RigidBodyComponents::allocate(uint32 nbComponentsToAllocate) {
         memcpy(newContactPairs, mContactPairs, mNbComponents * sizeof(Array<uint>));
         memcpy(newLinearLockAxisFactors, mLinearLockAxisFactors, mNbComponents * sizeof(Vector3));
         memcpy(newAngularLockAxisFactors, mAngularLockAxisFactors, mNbComponents * sizeof(Vector3));
+        memcpy(newGravityScales, mGravityScales, mNbComponents * sizeof(decimal));
 
         // Deallocate previous memory
         mMemoryAllocator.release(mBuffer, mNbAllocatedComponents * mComponentDataSize);
@@ -168,6 +170,7 @@ void RigidBodyComponents::allocate(uint32 nbComponentsToAllocate) {
     mContactPairs = newContactPairs;
     mLinearLockAxisFactors = newLinearLockAxisFactors;
     mAngularLockAxisFactors = newAngularLockAxisFactors;
+    mGravityScales = newGravityScales;
 }
 
 // Add a component
@@ -208,6 +211,7 @@ void RigidBodyComponents::addComponent(Entity bodyEntity, bool isSleeping, const
     new (mContactPairs + index) Array<uint>(mMemoryAllocator);
     new (mLinearLockAxisFactors + index) Vector3(1, 1, 1);
     new (mAngularLockAxisFactors + index) Vector3(1, 1, 1);
+    mGravityScales[index] = component.bodyType == BodyType::DYNAMIC ? decimal(1.0) : decimal(0);
 
     // Map the entity with the new component lookup index
     mMapEntityToComponentIndex.add(Pair<Entity, uint32>(bodyEntity, index));
@@ -256,6 +260,7 @@ void RigidBodyComponents::moveComponentToIndex(uint32 srcIndex, uint32 destIndex
     new (mContactPairs + destIndex) Array<uint>(mContactPairs[srcIndex]);
     new (mLinearLockAxisFactors + destIndex) Vector3(mLinearLockAxisFactors[srcIndex]);
     new (mAngularLockAxisFactors + destIndex) Vector3(mAngularLockAxisFactors[srcIndex]);
+    mGravityScales[destIndex] = mGravityScales[srcIndex];
 
     // Destroy the source component
     destroyComponent(srcIndex);
@@ -303,6 +308,7 @@ void RigidBodyComponents::swapComponents(uint32 index1, uint32 index2) {
     Array<uint> contactPairs1 = mContactPairs[index1];
     Vector3 linearLockAxisFactor1(mLinearLockAxisFactors[index1]);
     Vector3 angularLockAxisFactor1(mAngularLockAxisFactors[index1]);
+    decimal gravityScale1(mGravityScales[index1]);
 
     // Destroy component 1
     destroyComponent(index1);
@@ -341,6 +347,7 @@ void RigidBodyComponents::swapComponents(uint32 index1, uint32 index2) {
     new (mContactPairs + index2) Array<uint>(contactPairs1);
     new (mLinearLockAxisFactors + index2) Vector3(linearLockAxisFactor1);
     new (mAngularLockAxisFactors + index2) Vector3(angularLockAxisFactor1);
+    mGravityScales[index2] = gravityScale1;
 
     // Update the entity to component index mapping
     mMapEntityToComponentIndex.add(Pair<Entity, uint32>(entity1, index2));

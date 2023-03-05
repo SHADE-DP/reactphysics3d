@@ -84,6 +84,7 @@ void RigidBody::setType(BodyType type) {
         // Reset the inverse mass and inverse inertia tensor to zero
         mWorld.mRigidBodyComponents.setMassInverse(mEntity, decimal(0));
         mWorld.mRigidBodyComponents.setInverseInertiaTensorLocal(mEntity, Vector3::zero());
+        mWorld.mRigidBodyComponents.setGravityScale(mEntity, decimal(0));
     }
     else {  // If it is a dynamic body
 
@@ -102,6 +103,8 @@ void RigidBody::setType(BodyType type) {
                                           inertiaTensorLocal.y != decimal(0.0) ? decimal(1.0) / inertiaTensorLocal.y : 0,
                                           inertiaTensorLocal.z != decimal(0.0) ? decimal(1.0) / inertiaTensorLocal.z : 0);
         mWorld.mRigidBodyComponents.setInverseInertiaTensorLocal(mEntity, inverseInertiaTensorLocal);
+
+        mWorld.mRigidBodyComponents.setGravityScale(mEntity, decimal(1.0));
     }
 
     // Awake the body
@@ -1097,6 +1100,17 @@ void RigidBody::setIsActive(bool isActive) {
 
     CollisionBody::setIsActive(isActive);
 }
+
+decimal RigidBody::getGravityScale() const
+{
+  return mWorld.mRigidBodyComponents.getGravityScale(mEntity);
+}
+
+void RigidBody::setGravityScale(decimal gravityScale)
+{
+  mWorld.mRigidBodyComponents.setGravityScale(mEntity, gravityScale);
+}
+
 
 #ifdef IS_RP3D_PROFILING_ENABLED
 

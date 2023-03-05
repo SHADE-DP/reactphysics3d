@@ -219,6 +219,12 @@ class RigidBody : public CollisionBody {
         /// Remove a collider from the body
         virtual void removeCollider(Collider* collider) override;
 
+        /// Return the gravity factor applied to this rigid body
+        decimal getGravityScale() const;
+
+        /// Set the gravity factor to apply to this rigid body
+        void setGravityScale(decimal gravityScale);
+
 #ifdef IS_RP3D_PROFILING_ENABLED
 
 		/// Set the profiler
