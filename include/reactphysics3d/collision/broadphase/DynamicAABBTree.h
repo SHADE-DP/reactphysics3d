@@ -259,6 +259,10 @@ class DynamicAABBTree {
         /// Clear all the nodes and reset the tree
         void reset();
 
+        /// Report any shape overlapping with the AABB given in parameter.
+        /// This is faster than above as it exits the moment an overlap is detected.
+        bool reportAnyShapeOverlappingWithAABB(const AABB& aabb) const;
+
 #ifdef IS_RP3D_PROFILING_ENABLED
 
 		/// Set the profiler

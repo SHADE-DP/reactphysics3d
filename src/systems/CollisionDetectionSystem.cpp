@@ -1704,6 +1704,25 @@ void CollisionDetectionSystem::reportDebugRenderingContacts(Array<ContactPair>* 
     }
 }
 
+bool CollisionDetectionSystem::testOverlap(CollisionBody* body)
+{
+  NarrowPhaseInput narrowPhaseInput(mMemoryManager.getPoolAllocator(), mOverlappingPairs);
+
+  // Compute the broad-phase collision detection
+  computeBroadPhase();
+
+  // Filter the overlapping pairs to get only the ones with the selected body involved
+  Array<uint64> convexPairs(mMemoryManager.getPoolAllocator());
+  Array<uint64> concavePairs(mMemoryManager.getPoolAllocator());
+  filterOverlappingPairs(body->getEntity(), convexPairs, concavePairs);
+
+  if (convexPairs.size() > 0 || concavePairs.size() > 0)
+    return true;
+
+  return false;
+}
+
+
 // Return true if two bodies overlap (collide)
 bool CollisionDetectionSystem::testOverlap(CollisionBody* body1, CollisionBody* body2) {
 
@@ -1896,3 +1915,9 @@ const AABB CollisionDetectionSystem::getWorldAABB(const Collider* collider) cons
     assert(collider->getBroadPhaseId() > -1);
     return mBroadPhaseSystem.getFatAABB(collider->getBroadPhaseId());
 }
+
+bool CollisionDetectionSystem::testAABBOverlap(const AABB& aabb) const
+{
+  return mBroadPhaseSystem.testAABBOverlap(aabb);
+}
+

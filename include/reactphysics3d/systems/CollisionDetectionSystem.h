@@ -349,6 +349,9 @@ class CollisionDetectionSystem {
         void raycast(RaycastCallback* raycastCallback, const Ray& ray,
                      unsigned short raycastWithCategoryMaskBits) const;
 
+        /// Return true if a body overlaps with anything in the world.
+        bool testOverlap(CollisionBody* body);
+
         /// Return true if two bodies (collide) overlap
         bool testOverlap(CollisionBody* body1, CollisionBody* body2);
 
@@ -375,6 +378,9 @@ class CollisionDetectionSystem {
 
         /// Return the world event listener
         EventListener* getWorldEventListener();
+
+        /// Tests if an AABB overlaps with any collider
+        bool testAABBOverlap(const AABB& aabb) const;
 
 #ifdef IS_RP3D_PROFILING_ENABLED
 

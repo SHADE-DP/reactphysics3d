@@ -321,6 +321,9 @@ class PhysicsWorld {
         /// Ray cast method
         void raycast(const Ray& ray, RaycastCallback* raycastCallback, unsigned short raycastWithCategoryMaskBits = 0xFFFF) const;
 
+        /// Return true if this body overlaps with anything in the world
+        bool testOverlap(CollisionBody* body);
+
         /// Return true if two bodies overlap (collide)
         bool testOverlap(CollisionBody* body1, CollisionBody* body2);
 
@@ -453,6 +456,9 @@ class PhysicsWorld {
         /// Return a reference to the Debug Renderer of the world
         DebugRenderer& getDebugRenderer();
 
+        /// Specific: Test if a generic AABB overlaps with any collider in the world
+        bool testAAABBOverlap(const AABB& aabb) const;
+
 #ifdef IS_RP3D_PROFILING_ENABLED
 
         /// Return a reference to the profiler
@@ -542,6 +548,18 @@ RP3D_FORCE_INLINE void PhysicsWorld::testCollision(CollisionBody* body, Collisio
 RP3D_FORCE_INLINE void PhysicsWorld::testCollision(CollisionCallback& callback) {
     mCollisionDetection.testCollision(callback);
 }
+
+// Report if this body overlaps with anything in the world.
+/// Use this method if you are not interested in contacts but if you simply want to know
+/// which bodies overlap with the body in parameter. If you want to get the contacts, you need to use the
+/// testCollision() method instead.
+/**
+ * @param body Pointer to the collision body to test overlap with
+ */
+RP3D_FORCE_INLINE bool PhysicsWorld::testOverlap(CollisionBody* body){
+    return mCollisionDetection.testOverlap(body);
+}
+
 
 // Report all the bodies that overlap (collide) with the body in parameter
 /// Use this method if you are not interested in contacts but if you simply want to know
@@ -719,6 +737,12 @@ RP3D_FORCE_INLINE void PhysicsWorld::setIsDebugRenderingEnabled(bool isEnabled) 
 RP3D_FORCE_INLINE DebugRenderer& PhysicsWorld::getDebugRenderer() {
     return mDebugRenderer;
 }
+
+RP3D_FORCE_INLINE bool PhysicsWorld::testAAABBOverlap(const AABB& aabb) const
+{
+    return mCollisionDetection.testAABBOverlap(aabb);
+}
+
 
 }
 

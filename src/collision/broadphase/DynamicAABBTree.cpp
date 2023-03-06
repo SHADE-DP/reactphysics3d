@@ -844,4 +844,49 @@ int DynamicAABBTree::computeHeight(int32 nodeID) {
     return 1 + std::max(leftHeight, rightHeight);
 }
 
+bool DynamicAABBTree::reportAnyShapeOverlappingWithAABB(const AABB& aabb) const
+{
+  RP3D_PROFILE("DynamicAABBTree::reportAllShapesOverlappingWithAABB()", mProfiler);
+
+    // Create a stack with the nodes to visit
+    Stack<int32> stack(mAllocator, 64);
+    stack.push(mRootNodeID);
+
+    // While there are still nodes to visit
+    while(stack.size() > 0) 
+    {
+        // Get the next node ID to visit
+        const int32 nodeIDToVisit = stack.pop();
+
+        assert(nodeIDToVisit >= 0);
+        assert(nodeIDToVisit < mNbAllocatedNodes);
+
+        // Skip it if it is a null node
+        if (nodeIDToVisit == TreeNode::NULL_TREE_NODE) continue;
+
+        // Get the corresponding node
+        const TreeNode* nodeToVisit = mNodes + nodeIDToVisit;
+
+        // If the AABB in parameter overlaps with the AABB of the node to visit
+        if (aabb.testCollision(nodeToVisit->aabb)) 
+        {
+
+            // If the node is a leaf
+            if (nodeToVisit->isLeaf()) 
+            {
+               return true;
+            }
+            else 
+            {
+                // We need to visit its children
+                stack.push(nodeToVisit->children[0]);
+                stack.push(nodeToVisit->children[1]);
+            }
+        }
+    }
+
+    return false;
+}
+
+
 #endif

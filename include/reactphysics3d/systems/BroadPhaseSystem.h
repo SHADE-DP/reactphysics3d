@@ -198,6 +198,9 @@ class BroadPhaseSystem {
         /// Ray casting method
         void raycast(const Ray& ray, RaycastTest& raycastTest, unsigned short raycastWithCategoryMaskBits) const;
 
+        /// Tests if an AABB overlaps with any collider in the world
+        bool testAABBOverlap(const AABB& aabb) const;
+
 #ifdef IS_RP3D_PROFILING_ENABLED
 
 		/// Set the profiler
@@ -223,6 +226,11 @@ RP3D_FORCE_INLINE void BroadPhaseSystem::removeMovedCollider(int broadPhaseID) {
 // Return the collider corresponding to the broad-phase node id in parameter
 RP3D_FORCE_INLINE Collider* BroadPhaseSystem::getColliderForBroadPhaseId(int broadPhaseId) const {
     return static_cast<Collider*>(mDynamicAABBTree.getNodeDataPointer(broadPhaseId));
+}
+
+RP3D_FORCE_INLINE bool BroadPhaseSystem::testAABBOverlap(const AABB& aabb) const
+{
+  return mDynamicAABBTree.reportAnyShapeOverlappingWithAABB(aabb);
 }
 
 #ifdef IS_RP3D_PROFILING_ENABLED
